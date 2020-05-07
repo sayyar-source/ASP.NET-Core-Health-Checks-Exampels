@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HealthCheckexample.Health;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -27,16 +27,12 @@ namespace HealthCheckexample
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            //services.AddDbContext<CatalogContext>(options =>
-            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddHealthChecks().AddDbContextCheck<CatalogContext>();
 
+            services.AddDbContext<CatalogContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             //services.AddHealthChecks().AddCheck<HealthCheckEX>("example_health_check");
-            services.AddHealthChecks()
-   .AddTypeActivatedCheck<HealthCheckWithArgs>(
-       "test",
-       failureStatus: HealthStatus.Degraded,
-       tags: new[] { "example" },
-       args: new object[] { 5, "string",true });
+         
 
 
         }
