@@ -13,9 +13,13 @@ namespace HealthCheckexample.Health
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
 
-            var health = await CheckConnection();
-            if(health)
+            var (IsHealthy,time) = await CheckConnection();
+            if(IsHealthy)
             {
+                if(time>10)
+                {
+                    return HealthCheckResult.Degraded("Connection Is Poor");
+                }
                 return HealthCheckResult.Healthy("healthed");
             }
             else
@@ -24,17 +28,20 @@ namespace HealthCheckexample.Health
             }
         }
 
-        private async Task<bool> CheckConnection()
+        private async Task<Tuple<bool,int>> CheckConnection()
         {
+            var time1 = DateTime.Now;
+           await Task.Delay(12000);
             var client = new HttpClient();
            var response=await client.GetAsync("http://uporoje.ir/");
+            var time2 = DateTime.Now;
             if(response.IsSuccessStatusCode)
             {
-                return true;
+                return new Tuple<bool,int>(true,(int)(time2-time1).TotalSeconds);
             }
             else
             {
-                return false;
+                return new Tuple<bool, int>(false,-1);
             }
 
         }
