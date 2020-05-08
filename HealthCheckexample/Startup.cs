@@ -31,12 +31,7 @@ namespace HealthCheckexample
             //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
              services.AddHealthChecks().AddCheck<HealthCheckEX>("example_health_check");
-            services.AddHealthChecks()
-               .AddTypeActivatedCheck<TestHealthCheckWithArgs>(
-                "test",
-                 failureStatus: HealthStatus.Degraded,
-                 tags: new[] { "example" },
-                 args: new object[] { 5, "string",true });
+          
 
         }
 

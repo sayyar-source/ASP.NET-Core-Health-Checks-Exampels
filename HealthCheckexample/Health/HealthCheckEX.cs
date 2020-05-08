@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,20 +10,33 @@ namespace HealthCheckexample.Health
 {
     public class HealthCheckEX : IHealthCheck
     {
-        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
 
-            var health = true;
+            var health = await CheckConnection();
             if(health)
             {
-                return Task.FromResult(
-                                HealthCheckResult.Healthy("healthed"));
+                return HealthCheckResult.Healthy("healthed");
             }
             else
             {
-                return Task.FromResult(
-                               HealthCheckResult.Unhealthy("Unhealthy"));
+                return HealthCheckResult.Unhealthy("Unhealthy");
             }
+        }
+
+        private async Task<bool> CheckConnection()
+        {
+            var client = new HttpClient();
+           var response=await client.GetAsync("http://uporoje.ir/");
+            if(response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
     }
 }
